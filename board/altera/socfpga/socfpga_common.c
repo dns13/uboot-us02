@@ -232,3 +232,20 @@ int board_eth_init(bd_t *bis)
 	return 0;
 #endif
 }
+
+/*
+ * Initializes MMC controllers.
+ * to override, implement board_mmc_init()
+ */
+int board_mmc_init(bd_t *bis)
+{
+#ifdef CONFIG_DWMMC
+	printf("initializing dwmmc...\n");
+	altera_dwmmc_init(CONFIG_SDMMC_BASE, CONFIG_DWMMC_BUS_WIDTH, 0);
+#endif
+#ifdef CONFIG_ULTISDC_SDHCI
+	printf("initializing ultisdc...\n");
+	ultisdc_init(CONFIG_ULTISDC_BASE, 1);
+#endif
+	return 0;
+}

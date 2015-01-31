@@ -40,4 +40,70 @@
 #define CONFIG_EPHY_PHY_ADDR		CONFIG_EPHY1_PHY_ADDR
 #define CONFIG_PHY_INTERFACE_MODE	SOCFPGA_PHYSEL_ENUM_RGMII
 
+/* ULTISDC FPGA CORE */
+#define CONFIG_ULTISDC_SDHCI
+#define CONFIG_ULTISDC_BASE		0xFF230000
+#define CONFIG_SDHCI
+#define CONFIG_MMC_SDHCI_IO_ACCESSORS
+
+#undef CONFIG_SYS_MMC_MAX_BLK_COUNT
+#define CONFIG_SYS_MMC_MAX_BLK_COUNT     1
+
+#undef CONFIG_EXTRA_ENV_SETTINGS
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=n\0" \
+	"loadaddr=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
+	"fdtaddr=0x00000100\0" \
+	"bootimage=zImage\0" \
+	"bootimagesize=0x600000\0" \
+	"fdtimage=socfpga.dtb\0" \
+	"fdtimagesize=0x7000\0" \
+	"mmcloadcmd=fatload\0" \
+	"mmcloadpart=1\0" \
+	"mmcroot=/dev/mmcblk1p2\0" \
+	"qspiloadcs=0\0" \
+	"qspibootimageaddr=0xa0000\0" \
+	"qspifdtaddr=0x50000\0" \
+	"qspiroot=/dev/mtdblock1\0" \
+	"qspirootfstype=jffs2\0" \
+	"nandbootimageaddr=0x120000\0" \
+	"nandfdtaddr=0xA0000\0" \
+	"nandroot=/dev/mtdblock1\0" \
+	"nandrootfstype=jffs2\0" \
+	"ramboot=setenv bootargs " CONFIG_BOOTARGS ";" \
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"mmcload=mmc rescan;" \
+		"${mmcloadcmd} mmc 1:${mmcloadpart} ${loadaddr} ${bootimage};" \
+		"${mmcloadcmd} mmc 1:${mmcloadpart} ${fdtaddr} ${fdtimage}\0" \
+	"mmcboot=setenv bootargs " CONFIG_BOOTARGS \
+		" root=${mmcroot} rw rootwait;" \
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"netboot=dhcp ${bootimage} ; " \
+		"tftp ${fdtaddr} ${fdtimage} ; run ramboot\0" \
+	"qspiload=sf probe ${qspiloadcs};" \
+		"sf read ${loadaddr} ${qspibootimageaddr} ${bootimagesize};" \
+		"sf read ${fdtaddr} ${qspifdtaddr} ${fdtimagesize};\0" \
+	"qspiboot=setenv bootargs " CONFIG_BOOTARGS \
+		" root=${qspiroot} rw rootfstype=${qspirootfstype};"\
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"nandload=nand read ${loadaddr} ${nandbootimageaddr} ${bootimagesize};"\
+		"nand read ${fdtaddr} ${nandfdtaddr} ${fdtimagesize}\0" \
+	"nandboot=setenv bootargs " CONFIG_BOOTARGS \
+		" root=${nandroot} rw rootfstype=${nandrootfstype};"\
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"fpga=0\0" \
+	"fpgadata=0x2000000\0" \
+	"fpgadatasize=0x700000\0" \
+	CONFIG_KSZ9021_CLK_SKEW_ENV "=" \
+		__stringify(CONFIG_KSZ9021_CLK_SKEW_VAL) "\0" \
+	CONFIG_KSZ9021_DATA_SKEW_ENV "=" \
+		__stringify(CONFIG_KSZ9021_DATA_SKEW_VAL) "\0" \
+	"scriptfile=u-boot.scr\0" \
+	"callscript=if fatload mmc 1:1 $fpgadata $scriptfile;" \
+			"then source $fpgadata; " \
+		"else " \
+			"echo Optional boot script not found. " \
+			"Continuing to boot normally; " \
+		"fi;\0"
+
 #endif	/* __CONFIG_H */
