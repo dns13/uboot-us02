@@ -1327,3 +1327,45 @@ int mmc_initialize(bd_t *bis)
 
 	return 0;
 }
+
+
+#ifdef CONFIG_SYS_EXOR_USOM
+#ifdef CONFIG_SPL_BUILD
+
+/* The functions below perform respectively the sd-card and
+ * EMMC initialization tasks for the SPL loader.
+ * only 1 mmc device is seen at the same time.
+ */
+extern int spl_board_mmc_initialize(void);
+extern int spl_board_emmc_initialize(void);
+
+int spl_mmc_initialize(void)
+{
+  INIT_LIST_HEAD (&mmc_devices);
+  cur_dev_num = 0;
+  
+  spl_board_mmc_initialize();
+  
+  //do_preinit();
+  return 0;
+}
+
+int spl_emmc_initialize(void)
+{
+  INIT_LIST_HEAD (&mmc_devices);
+  cur_dev_num = 0;
+  
+  spl_board_emmc_initialize();
+  
+  //do_preinit();
+  return 0;
+}
+
+#endif
+#endif
+
+
+ 
+
+
+

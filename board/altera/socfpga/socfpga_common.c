@@ -249,3 +249,21 @@ int board_mmc_init(bd_t *bis)
 #endif
 	return 0;
 }
+
+#ifdef CONFIG_SPL_BUILD
+ /*
+  * Init the ULTISDC for the dedicated/custom SPL u-boot loading sequence. 
+  */
+ int spl_board_mmc_initialize(void)
+ {
+   return ultisdc_init(CONFIG_ULTISDC_BASE, 1);
+ }
+ 
+ /*
+  * Init the EMMC for the dedicated/custom SPL u-boot loading sequence. 
+  */
+ int spl_board_emmc_initialize(void)
+ {
+   return altera_dwmmc_init(CONFIG_SDMMC_BASE, CONFIG_DWMMC_BUS_WIDTH, 0);
+ }
+#endif

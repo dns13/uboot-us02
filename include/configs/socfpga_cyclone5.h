@@ -29,6 +29,10 @@
 #include "../../board/altera/socfpga/iocsr_config_cyclone5.h"
 #endif
 
+#if (CONFIG_PRELOADER_BOOT_FROM_SDMMC == 1 && CONFIG_PRELOADER_FAT_SUPPORT == 1)
+#define CONFIG_SYS_EXOR_USOM
+#endif
+
 /*
  * Console setup
  */
