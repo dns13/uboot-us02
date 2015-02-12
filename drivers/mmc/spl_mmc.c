@@ -41,10 +41,15 @@ static void mmc_load_image_raw(struct mmc *mmc)
 						sizeof(struct image_header));
 
 	/* read image header to find the image size & load address */
+#ifndef CONFIG_SYS_EXOR_USOM	
 	err = mmc->block_dev.block_read(0,
 			CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR, 1,
 			(void *)header);
-
+#else
+	err = mmc->block_dev.block_read(0,
+			0, 1,
+			(void *)header);
+#endif
 	if (err <= 0)
 		goto end;
 
@@ -55,10 +60,15 @@ static void mmc_load_image_raw(struct mmc *mmc)
 				mmc->read_bl_len;
 
 	/* Read the header too to avoid extra memcpy */
+#ifndef CONFIG_SYS_EXOR_USOM	
 	err = mmc->block_dev.block_read(0,
 			CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR,
 			image_size_sectors, (void *)spl_image.load_addr);
-
+#else
+	err = mmc->block_dev.block_read(0,
+			0,
+			image_size_sectors, (void *)spl_image.load_addr);
+#endif
 end:
 	if (err <= 0) {
 		printf("spl: mmc blk read err - %d\n", err);
@@ -224,7 +234,7 @@ void spl_mmc_load_image(void)
 #else
 /* For Exor microsoms we use a dedicated sequence for loading u-boot, in order to have a recovery solution in case the system (SPL) booted
  * from EMMC but the u-boot is not valid/present on the EMMC itself.
- * For this reason, loading u-boot from the FAT formatted partition of a removable mmc card takes the precedence; if not found, we will proceed
+ * For this reason, loading u-boot from a removable mmc card takes the precedence; if not found, we will proceed
  * loading the u-boot in raw mode from the BOOT1 partition of the EMMC
  */
  extern int spl_mmc_initialize(void);
@@ -296,11 +306,15 @@ void spl_mmc_load_image(void)
     printf("spl: EMMC init failed: err - %d\n", err);
     hang();
   }
+
+  printf("spl: Switching to EMMC partition n. %d ...\n", CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION);
+  if (mmc_switch_part(0, CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION)) 
+  {
+    puts("spl: EMMC partition switch failed\n");
+    hang();
+  }
   
   puts("spl: Loading raw u-boot image...\n");
-  err= mmc_load_image_mbr(mmc);
-
-  if(err)
-    hang();
+  mmc_load_image_raw(mmc);
 }
 #endif

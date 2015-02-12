@@ -137,6 +137,7 @@ static int dwmci_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
 			return TIMEOUT;
 		}
 		timeout--;
+		udelay(100);
 	}
 
 	dwmci_writel(host, DWMCI_RINTSTS, DWMCI_INTMSK_ALL);
