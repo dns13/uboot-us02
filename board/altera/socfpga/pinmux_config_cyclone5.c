@@ -70,8 +70,8 @@ unsigned long sys_mgr_init_table[CONFIG_HPS_PINMUX_NUM] = {
 	0, /* GENERALIO4 */
 	0, /* GENERALIO5 */
 	0, /* GENERALIO6 */
-	0, /* GENERALIO7 */
-	0, /* GENERALIO8 */
+	1, /* GENERALIO7 */
+	1, /* GENERALIO8 */
 	0, /* GENERALIO9 */
 	0, /* GENERALIO10 */
 	0, /* GENERALIO11 */
@@ -203,8 +203,8 @@ unsigned long sys_mgr_init_table[CONFIG_HPS_PINMUX_NUM] = {
 	0, /* GPLMUX52 */
 	0, /* GPLMUX53 */
 	0, /* GPLMUX54 */
-	0, /* GPLMUX55 */
-	0, /* GPLMUX56 */
+	1, /* GPLMUX55 */
+	1, /* GPLMUX56 */
 	0, /* GPLMUX57 */
 	0, /* GPLMUX58 */
 	0, /* GPLMUX59 */
