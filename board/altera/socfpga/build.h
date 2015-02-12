@@ -37,7 +37,7 @@
 #define CONFIG_PRELOADER_BOOT_FROM_QSPI		(0)
 #define CONFIG_PRELOADER_BOOT_FROM_SDMMC	(1)
 #define CONFIG_PRELOADER_BOOT_FROM_NAND		(0)
-#define CONFIG_PRELOADER_BOOT_FROM_RAM		(1)
+#define CONFIG_PRELOADER_BOOT_FROM_RAM		(0)
 
 /*
  * Handoff files must provide image location of subsequent

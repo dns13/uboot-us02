@@ -29,8 +29,9 @@
 #include "../../board/altera/socfpga/iocsr_config_cyclone5.h"
 #endif
 
-#if (CONFIG_PRELOADER_BOOT_FROM_SDMMC == 1 && CONFIG_PRELOADER_FAT_SUPPORT == 1)
+#if (CONFIG_PRELOADER_BOOT_FROM_SDMMC == 1)
 #define CONFIG_SYS_EXOR_USOM
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION	2
 #endif
 
 /*

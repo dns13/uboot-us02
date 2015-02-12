@@ -66,7 +66,7 @@ end:
 	}
 }
 
-static void mmc_load_image_mbr(struct mmc *mmc)
+static int mmc_load_image_mbr(struct mmc *mmc)
 {
 #define MBR_SIGNATURE				(0xAA55)
 #define MBR_SIGNATURE_OFFSET			(0x1FE)
@@ -82,7 +82,8 @@ static void mmc_load_image_mbr(struct mmc *mmc)
 	u32 offset;
 	u16 sign;
 	u8 *p_entry;
-	u32 image_size_sectors, err;
+	u32 image_size_sectors;
+	int err;
 	const struct image_header *header;
 
 	header = (struct image_header *)(CONFIG_SYS_TEXT_BASE -
@@ -96,7 +97,7 @@ static void mmc_load_image_mbr(struct mmc *mmc)
 	memcpy(&sign, (u8 *)header + MBR_SIGNATURE_OFFSET, sizeof(sign));
 	if (sign != MBR_SIGNATURE) {
 		puts("spl: No MBR signature is found\n");
-		hang();
+		return -1;
 	}
 
 	/* Lookup each partition entry for partition ID. */
@@ -139,8 +140,10 @@ static void mmc_load_image_mbr(struct mmc *mmc)
 end:
 	if (err <= 0) {
 		printf("spl: mmc blk read err - %d\n", err);
-		hang();
+		return -1;
 	}
+	
+	return 0;
 }
 
 #ifdef CONFIG_SPL_FAT_SUPPORT
@@ -205,7 +208,8 @@ void spl_mmc_load_image(void)
 		mmc_load_image_raw(mmc);
 	} else if (boot_mode == MMCSD_MODE_MBR) {
 		debug("boot mode - MBR\n");
-		mmc_load_image_mbr(mmc);
+		if(mmc_load_image_mbr(mmc))
+		  hang();
 #ifdef CONFIG_SPL_FAT_SUPPORT
 	} else if (boot_mode == MMCSD_MODE_FAT) {
 		debug("boot mode - FAT\n");
@@ -229,14 +233,14 @@ void spl_mmc_load_image(void)
  void spl_mmc_load_image(void)
  {
   struct mmc *mmc;
-  int err;
+  int err = 0;
   int emmc_dev = 0;
   u32 boot_mode;
-  /* 1: Try loading u-boot from the FAT partition of a removable SD-card */
+  /* 1: Try loading u-boot from the RAW partition of a removable SD-card */
   err = spl_mmc_initialize();
   if(!err)
   {
-    puts("spl: Trying loading u-boot from FAT partition of SD-Card ...\n");
+    puts("spl: Trying loading u-boot from SD-Card ...\n");
     emmc_dev ++;
   }
   
@@ -260,14 +264,12 @@ void spl_mmc_load_image(void)
     }
   }
   
+  puts("spl: Loading raw u-boot image...\n");
   if(!err)
-  {
-    err = mmc_load_image_fat(mmc);
-    if(!err)
-      return;
-    
-    printf("spl: File: %s not found on SD-card ... loading RAW u-boot image from EMMC.\n",CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME);
-  }
+    err = mmc_load_image_mbr(mmc);  
+
+  if(!err)
+    return;
   
   /* 2: Try loading RAW u-boot image from EMMC BOOT1 partition */
   err = spl_emmc_initialize();
@@ -295,14 +297,10 @@ void spl_mmc_load_image(void)
     hang();
   }
   
-  printf("spl: Switching to EMMC partition n. %d ...\n", CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION);
-  if (mmc_switch_part(0, CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION)) 
-  {
-    puts("spl: EMMC partition switch failed\n");
-    hang();
-  }
-  
   puts("spl: Loading raw u-boot image...\n");
-  mmc_load_image_raw(mmc);
+  err= mmc_load_image_mbr(mmc);
+
+  if(err)
+    hang();
 }
 #endif
