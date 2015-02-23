@@ -27,6 +27,10 @@
 #endif
 #include <i2c.h>
 
+#include <asm/arch/dwmmc.h>
+
+extern int ultisdc_init(u32 regbase, int index);
+
 DECLARE_GLOBAL_DATA_PTR;
 
 /*
@@ -98,15 +102,54 @@ static void setenv_ethaddr_eeprom(void)
 }
 
 #ifdef CONFIG_BOARD_LATE_INIT
+extern int i2cgethwcfg (void);
 int board_late_init(void)
 {
-	uchar enetaddr[6];
+	char args[300];
+	char ethaddr[20];
+	char eth1addr[20];
+	char* tmp;
 
+	// read settings from SEPROM
+	if (i2cgethwcfg())
+	{
+		// error!
+		puts("Skipped setting environment variables due to SEEPROM access error\n");
+		return 0;
+	}
+
+	// set ethernet address
 	setenv_addr("setenv_ethaddr_eeprom", (void *)setenv_ethaddr_eeprom);
 
-	/* if no ethaddr environment, get it from EEPROM */
-	if (!eth_getenv_enetaddr("ethaddr", enetaddr))
-		setenv_ethaddr_eeprom();
+        // get ethernet addresses
+        tmp = getenv("ethaddr");
+	if (tmp != NULL)
+	{
+		memset(ethaddr, 0x00, sizeof(ethaddr));
+		strncpy(ethaddr, tmp, sizeof(ethaddr)-1);
+	}
+        else
+		strcpy("ethaddr", "FF:FF:FF:FF:FF:FF");
+
+        tmp = getenv("eth1addr");
+	if (tmp != NULL)
+	{
+		memset(eth1addr, 0x00, sizeof(eth1addr));
+		strncpy(eth1addr, tmp, sizeof(eth1addr)-1);
+	}
+       else
+		strcpy("eth1addr", "FF:FF:FF:FF:FF:FF");
+
+        // set bootargs
+	memset(args, 0x00, sizeof(args));
+	snprintf(args, sizeof(args)-1, "setenv bootargs console=ttyS0,115200 root=${mmcroot} rw rootwait hw_code=%s hw_dispid=%s touch_type=%s;bootz ${loadaddr} - ${fdtaddr}",
+			getenv("hw_code"),
+			getenv("hw_dispid"),
+			getenv("touch_type")); 
+	setenv("mmcboot", args);
+
+	printf("bootargs environment variable set to \"%s\"n", args);
+
 	return 0;
 }
 #endif

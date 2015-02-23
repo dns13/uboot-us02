@@ -132,6 +132,10 @@
 /* MMC support */
 #define CONFIG_CMD_MMC
 
+/* I2C save support */
+#define CONFIG_CMD_I2CHWCFG
+
+
 /*
  * Misc
  */
@@ -552,6 +556,9 @@
 #define CONFIG_SYS_I2C_SPEED		(100000)
 /* address of device when used as slave */
 #define CONFIG_SYS_I2C_SLAVE		(0x02)
+#define CONFIG_SYS_I2C_EEPROM_ADDR	(0x54)
+#define CONFIG_SYS_I2C_ADPADD 	(0x56)
+
 /* clock supplied to I2C controller in unit of MHz */
 #define IC_CLK				(cm_l4_sp_clock / 1000000)
 #define CONFIG_CMD_I2C

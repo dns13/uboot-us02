@@ -245,7 +245,7 @@ void spl_mmc_load_image(void)
   struct mmc *mmc;
   int err = 0;
   int emmc_dev = 0;
-  u32 boot_mode;
+
   /* 1: Try loading u-boot from the RAW partition of a removable SD-card */
   err = spl_mmc_initialize();
   if(!err)
