@@ -34,6 +34,28 @@ extern int ultisdc_init(u32 regbase, int index);
 DECLARE_GLOBAL_DATA_PTR;
 
 /*
+ * Reads the hwcfg.txt file from USB stick (root of FATFS partition) if any, parses it
+ * and updates the environment variable accordingly.
+ * 
+ * NOTE: This function is used in case the I2C SEEPROM contents are not valid, in order to get
+ *       a temporary and volatile HW configuration from USB to boot properly Linux (even if the I2C SEEPROM is not programmed) 
+ */
+static int USBgethwcfg(void)
+{
+  
+  printf("Trying to get the HW cfg from USB stick...\n");
+  
+  run_command("usb stop", 0);
+  run_command("usb reset", 0);
+  run_command("setenv filesize 0", 0);
+  run_command("fatload usb 0 ${loadaddr} hwcfg.txt", 0);
+  run_command("env import -t ${loadaddr} ${filesize}", 0);
+  run_command("usb stop", 0);
+  
+  return 0;
+}
+
+/*
  * Initialization function which happen at early stage of c code
  */
 int board_early_init_f(void)
@@ -113,9 +135,9 @@ int board_late_init(void)
 	// read settings from SEPROM
 	if (i2cgethwcfg())
 	{
-		// error!
-		puts("Skipped setting environment variables due to SEEPROM access error\n");
-		return 0;
+	  // error!
+	  printf("Failed to read the HW cfg from the I2C SEEPROM: trying to load it from USB ...\n");
+	  USBgethwcfg();
 	}
 
 	// set ethernet address
