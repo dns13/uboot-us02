@@ -434,8 +434,11 @@
 #define CONFIG_DW_ALTDESCRIPTOR
 #define CONFIG_DW_SEARCH_PHY
 #define CONFIG_MII
-#define CONFIG_PHY_GIGE
-#define CONFIG_DW_AUTONEG
+/*1 Gbps is not supported
+ * #define CONFIG_PHY_GIGE */
+/*Disable autoneg. With autoneg enabled, the physical detecys 1Gbps and thus
+ *the Ethernet will not work
+ #define CONFIG_DW_AUTONEG */
 #define CONFIG_AUTONEG_TIMEOUT		(15 * CONFIG_SYS_HZ)
 #define CONFIG_PHYLIB
 #define CONFIG_PHY_MICREL
