@@ -42,16 +42,15 @@ DECLARE_GLOBAL_DATA_PTR;
  */
 static int USBgethwcfg(void)
 {
-  
+
   printf("Trying to get the HW cfg from USB stick...\n");
-  
+
   run_command("usb stop", 0);
   run_command("usb reset", 0);
   run_command("setenv filesize 0", 0);
-  run_command("fatload usb 0 ${loadaddr} hwcfg.txt", 0);
-  run_command("env import -t ${loadaddr} ${filesize}", 0);
+  run_command_list("if fatload usb 0 ${loadaddr} hwcfg.txt;then env import -t ${loadaddr} ${filesize}; fi", -1, 0);
   run_command("usb stop", 0);
-  
+
   return 0;
 }
 
