@@ -150,7 +150,7 @@ int board_late_init(void)
 		strncpy(ethaddr, tmp, sizeof(ethaddr)-1);
 	}
         else
-		strcpy("ethaddr", "FF:FF:FF:FF:FF:FF");
+		setenv("ethaddr", "FF:FF:FF:FF:FF:FF");
 
         tmp = getenv("eth1addr");
 	if (tmp != NULL)
@@ -159,7 +159,7 @@ int board_late_init(void)
 		strncpy(eth1addr, tmp, sizeof(eth1addr)-1);
 	}
        else
-		strcpy("eth1addr", "FF:FF:FF:FF:FF:FF");
+		setenv("eth1addr", "FF:FF:FF:FF:FF:FF");
 
         // set bootargs
 	memset(args, 0x00, sizeof(args));
