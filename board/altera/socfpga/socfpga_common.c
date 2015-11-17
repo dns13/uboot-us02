@@ -42,16 +42,15 @@ DECLARE_GLOBAL_DATA_PTR;
  */
 static int USBgethwcfg(void)
 {
-  
+
   printf("Trying to get the HW cfg from USB stick...\n");
-  
+
   run_command("usb stop", 0);
   run_command("usb reset", 0);
   run_command("setenv filesize 0", 0);
-  run_command("fatload usb 0 ${loadaddr} hwcfg.txt", 0);
-  run_command("env import -t ${loadaddr} ${filesize}", 0);
+  run_command_list("if fatload usb 0 ${loadaddr} hwcfg.txt;then env import -t ${loadaddr} ${filesize}; fi", -1, 0);
   run_command("usb stop", 0);
-  
+
   return 0;
 }
 
@@ -151,7 +150,7 @@ int board_late_init(void)
 		strncpy(ethaddr, tmp, sizeof(ethaddr)-1);
 	}
         else
-		strcpy("ethaddr", "FF:FF:FF:FF:FF:FF");
+		setenv("ethaddr", "FF:FF:FF:FF:FF:FF");
 
         tmp = getenv("eth1addr");
 	if (tmp != NULL)
@@ -160,7 +159,7 @@ int board_late_init(void)
 		strncpy(eth1addr, tmp, sizeof(eth1addr)-1);
 	}
        else
-		strcpy("eth1addr", "FF:FF:FF:FF:FF:FF");
+		setenv("eth1addr", "FF:FF:FF:FF:FF:FF");
 
         // set bootargs
 	memset(args, 0x00, sizeof(args));
