@@ -181,7 +181,7 @@ int board_late_init(void)
 			getenv("touch_type")); 
 	setenv("mmcboot", args);
 
-	printf("bootargs environment variable set to \"%s\"n", args);
+	printf("bootargs environment variable set to \"%s\"\n", args);
 
 	return 0;
 }
