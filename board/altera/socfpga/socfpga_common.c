@@ -58,8 +58,8 @@ int set_phy_params(void)
 {
   /* Set MAC-Interface to RMII and reload */
   run_command("mii write 0 0x17 0xB302", 0);
-  run_command("mii write 0 0x0 0x1840", 0);
-  run_command("mii write 0 0x0 0x1040", 0);
+  //run_command("mii write 0 0x0 0x1840", 0);
+  //run_command("mii write 0 0x0 0x1040", 0);
   
   printf("PHY configured to RMII\n");
   
