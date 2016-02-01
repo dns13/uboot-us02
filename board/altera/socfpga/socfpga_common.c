@@ -54,6 +54,17 @@ static int USBgethwcfg(void)
   return 0;
 }
 
+int set_phy_params(void)
+ {
+   /* Set MAC-Interface to RMII and reload */
+   run_command("mii write 0 0x17 0xB302", 0);
+   run_command("mii write 0 0x0 0x1240", 0);
+   
+   printf("PHY configured to RMII\n");
+   
+   return 0;
+ }
+
 /*
  * Initialization function which happen at early stage of c code
  */
@@ -291,6 +302,8 @@ int board_eth_init(bd_t *bis)
 		PHY_INTERFACE_MODE_RMII);
 #endif
 	debug("board_eth_init %d\n", rval);
+	
+	set_phy_params();
 	
 	return rval;
 #else
