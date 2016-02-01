@@ -57,7 +57,6 @@ static int USBgethwcfg(void)
 int set_phy_params(void)
 {
   /* Set MAC-Interface to RMII and reload */
-  run_command("mii device mii0", 0);
   run_command("mii write 0 0x17 0xB302", 0);
   run_command("mii write 0 0x0 0x1840", 0);
   run_command("mii write 0 0x0 0x1040", 0);
@@ -173,8 +172,6 @@ int board_late_init(void)
 	}
        else
 		setenv("eth1addr", "FF:FF:FF:FF:FF:FF");
-
-	set_phy_params();
 
         // set bootargs
 	memset(args, 0x00, sizeof(args));
@@ -306,6 +303,9 @@ int board_eth_init(bd_t *bis)
 		PHY_INTERFACE_MODE_RMII);
 #endif
 	debug("board_eth_init %d\n", rval);
+	
+	set_phy_params();
+	
 	return rval;
 #else
 	return 0;
