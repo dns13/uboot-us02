@@ -38,7 +38,7 @@
  * Console setup
  */
 /* Monitor Command Prompt */
-#define CONFIG_SYS_PROMPT		"SOCFPGA_CYCLONE5 # "
+#define CONFIG_SYS_PROMPT		"BONE # "
 
 /* EMAC controller and PHY used */
 #define CONFIG_EMAC_BASE		CONFIG_EMAC1_BASE
