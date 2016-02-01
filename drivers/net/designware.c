@@ -456,6 +456,9 @@ static int configure_phy(struct eth_device *dev)
 				      eth_mdio_write, dw_reset_phy) < 0)
 		return -1;
 
+	/* set phy mode to RMII */
+	eth_mido_write(dev, phy_addr, 0x17, 0x302);
+
 #if defined(CONFIG_DW_AUTONEG)
 	/* Set Auto-Neg Advertisement capabilities to 10/100 half/full */
 	eth_mdio_write(dev, phy_addr, MII_ADVERTISE, 0x1E1);
