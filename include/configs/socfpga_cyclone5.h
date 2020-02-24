@@ -80,6 +80,15 @@
 	"mmcboot=setenv bootargs " CONFIG_BOOTARGS \
 		" root=${mmcroot} rw rootwait;" \
 		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"safeboot=setenv bootargs " CONFIG_BOOTARGS \
+		" root=${mmcroot} rw rootwait" \
+		" modprobe.blacklist=bemos_ab;" \
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
+	"repairboot=setenv bootargs " CONFIG_BOOTARGS \
+		" root=${mmcroot} ro rootwait" \
+		" fsck.mode=force fsck.repair=yes" \
+		" modprobe.blacklist=bemos_ab;" \
+		"bootz ${loadaddr} - ${fdtaddr}\0" \
 	"netboot=dhcp ${bootimage} ; " \
 		"tftp ${fdtaddr} ${fdtimage} ; run ramboot\0" \
 	"qspiload=sf probe ${qspiloadcs};" \
